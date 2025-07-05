@@ -10,7 +10,7 @@
 }
 
 .fc .fc-button-primary:disabled {
-    color: #3B86FF;
+    color: var(--fc-button-active-text-color);
 }
 
 .fc .fc-button:disabled {
@@ -59,3 +59,66 @@
 .fc .fc-toolbar.fc-header-toolbar {
     margin-bottom: 20px;
 }
+
+.fc .fc-scrollgrid-section-header{
+    background-color: var(--scrollgrid-section-bg-color);
+}
+
+.fc .fc-col-header-cell .fc-scrollgrid-sync-inner {
+    padding: 16px 0;
+}
+
+.fc-theme-standard th {
+    border-right: none;
+    border-left: none;
+}
+
+.fc .fc-daygrid-day-number {
+    color: var(--day-number-color);
+    font-size: 15px;
+}
+
+.fc .fc-daygrid-day-top {
+    padding: 17px 15px;
+}
+
+.fc .fc-col-header-cell .fc-col-header-cell-cushion {
+    font-size: 11px;
+    font-weight: bold;
+    color: #A3A6B4;
+}
+
+.fc .fc-timegrid-slot,
+.fc .fc-timegrid-axis-cushion {
+    font-size: 13px;
+}
+
+.fc .fc-timegrid-axis-frame {
+    justify-content: center;
+}
+
+.fc .fc-timegrid-divider {
+    display: none;
+}
+
+.fc .fc-timegrid-slot-minor {
+    border-top-style: none;
+}
+
+.fc-direction-ltr .fc-timegrid-slot-label-frame {
+    text-align: center;
+}
+
+.fc .fc-timegrid-slot-label-cushion {
+    padding: 15px 20px;
+}
+
+.fc .fc-scrollgrid-section td {
+    padding: 0;
+}
+
+.fc .fc-scrollgrid-section {
+    height: 0;
+}
+
+

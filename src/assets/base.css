@@ -1,6 +1,5 @@
 :root {
   --fc-border-color: #EAF0F4;
-  --fc-daygrid-event-dot-width: 5px;
 
   --fc-button-text-color: #4D4F5C;
   --fc-button-bg-color: #FFFFFF;
@@ -10,8 +9,12 @@
   --fc-button-active-bg-color: #FFFFFF;
   --fc-button-active-border-color: #D7DAE2;
   --fc-button-active-text-color: #3B86FF;
+  --fc-today-bg-color: #F5F6FA;
 
   --main-text-color: #4D4F5C;
+  --scrollgrid-section-bg-color: #F5F6FA;
+  --day-number-color: #43425D;
+
 }
 
 *,
@@ -23,24 +26,24 @@
 }
 
 @font-face {
-  font-family: 'MyFont';
+  font-family: 'Source Sans Pro';
   src: url('@/assets/fonts/SourceSansPro-Regular.otf') format('opentype');
   font-weight: 400;
-  font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'MyFont';
+  font-family: 'Source Sans Pro';
   src: url('@/assets/fonts/SourceSansPro-Bold.otf') format('opentype');
-  font-weight: 700;
-  font-style: normal;
+  font-weight: bold;
   font-display: swap;
 }
 
 body {
-  font-family: 'Source Sans Pro, Regular', sans-serif;
+  font-family: 'Source Sans Pro', sans-serif;
   color: var(--main-text-color);
+  font-variant-numeric: lining-nums;
+  font-feature-settings: "lnum";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

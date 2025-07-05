@@ -17,6 +17,23 @@ const selectedEvent = ref(null);
 const calendarOptions = reactive({
   plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin],
   initialView: 'dayGridMonth',
+  views: {
+    timeGridWeek: {
+      titleFormat: {
+        month: 'short',
+        day: 'numeric'
+      },
+      slotLabelFormat: {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      },
+      slotLabelInterval: '01:00:00',   // One label every 1 hour
+      slotDuration: '01:00:00',        // Each row is 1 hour tall
+      slotMinTime: '00:00:00',
+      slotMaxTime: '24:00:00'
+    }
+  },
   headerToolbar: {
     left: 'today prev next',
     center: 'title',
