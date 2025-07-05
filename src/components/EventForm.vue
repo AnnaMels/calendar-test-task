@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, defineProps, computed, defineEmits, watch } from 'vue'
+import { reactive, computed, watch } from 'vue'
 
 const props = defineProps({
   position: {

@@ -3,6 +3,7 @@ import { reactive, ref } from 'vue'
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
+import listPlugin from '@fullcalendar/list'
 import interactionPlugin from '@fullcalendar/interaction'
 import EventForm from '@/components/EventForm.vue'
 
@@ -14,17 +15,25 @@ const selectedDate = ref(null);
 const selectedEvent = ref(null);
 
 const calendarOptions = reactive({
-  plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin],
+  plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin],
   initialView: 'dayGridMonth',
   headerToolbar: {
-    left: 'prev,next today',
+    left: 'today prev next',
     center: 'title',
-    right: 'dayGridMonth, timeGridWeek, timeGridDay'
+    right: 'dayGridMonth timeGridWeek timeGridDay listWeek'
+  },
+  buttonText: {
+    today: 'Today',
+    prev: 'Back',
+    next: 'Next',
+    dayGridMonth: 'Month',
+    timeGridWeek: 'Week',
+    timeGridDay: 'Day',
+    listWeek: 'Agenda'
   },
   editable: true,
   dateClick: onDateClick,
   eventClick: onEventClick,
-  eventResize: onEventResize,
   events: events
 });
 
@@ -89,15 +98,12 @@ function onEventClick (clickInfo) {
 
   isAddEventFormOpen.value = true;
 }
-function onEventResize () {
-  console.log('onEventResize')
-}
 
 </script>
 
 <template>
   <div class="calendar-container">
-    <h1>Calendar</h1>
+    <h2 class="calendar-title">Calendar View</h2>
     <FullCalendar :options="calendarOptions"/>
     <EventForm
         v-if="isAddEventFormOpen"
@@ -113,7 +119,14 @@ function onEventResize () {
 
 <style scoped>
   .calendar-container {
-    padding: 100px 75px;
+    padding: 20px;
+    background-color: #ffffff;
+  }
+
+  .calendar-title {
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #4D4F5C;
   }
 
 </style>

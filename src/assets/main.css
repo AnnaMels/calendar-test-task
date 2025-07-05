@@ -3,3 +3,59 @@
 .fc-event-main-frame .fc-event-time {
     display: none;
 }
+
+.fc-toolbar-chunk:first-child,
+.fc-toolbar-chunk:nth-child(3) {
+    box-shadow: 0 2px 3px #0000000A;
+}
+
+.fc .fc-button-primary:disabled {
+    color: #3B86FF;
+}
+
+.fc .fc-button:disabled {
+     opacity: 1;
+}
+
+.fc .fc-button {
+    padding: 8px 18px;
+    font-size: 13px;
+}
+
+.fc-direction-ltr .fc-toolbar > * > :not(:first-child) {
+    margin: 0;
+}
+
+.fc .fc-prev-button,
+.fc .fc-timeGridWeek-button,
+.fc .fc-timeGridDay-button {
+    border-radius: 0;
+}
+
+.fc .fc-timeGridWeek-button {
+    border-right: none;
+}
+
+.fc .fc-next-button,
+.fc .fc-listWeek-button {
+    border-radius: 0 4px 4px 0;
+    border-left: none;
+}
+
+.fc .fc-today-button,
+.fc .fc-dayGridMonth-button {
+    border-radius: 4px 0 0 4px;
+    border-right: none;
+}
+
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+    color: var(--fc-button-active-text-color);
+}
+
+.fc .fc-toolbar-title {
+    font-size: 18px;
+}
+
+.fc .fc-toolbar.fc-header-toolbar {
+    margin-bottom: 20px;
+}
