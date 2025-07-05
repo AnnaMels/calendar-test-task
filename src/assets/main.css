@@ -1,0 +1,5 @@
+@import './base.css';
+
+.fc-event-main-frame .fc-event-time {
+    display: none;
+}
