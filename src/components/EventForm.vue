@@ -126,11 +126,10 @@ const adjustedPosition = ref({ top: '0px', left: '0px' })
 const arrowPosition = ref({top: '0px', left: '0px', rotate: '0deg'})
 const formRef = ref()
 
-// Watch the passed position and adjust it to stay within viewport
 watch(
     () => props.position,
     async (newPos) => {
-      await nextTick() // wait for DOM update
+      await nextTick()
 
       let left = newPos.x
       let top = newPos.y
@@ -173,45 +172,47 @@ onMounted(() => {
   <div class="form-wrapper" ref="formRef" :style="adjustedPosition">
     <div class="arrow" :style="arrowPosition"></div>
     <form @submit="submit" class="form">
+      <img class="close-icon" @click="emit('close')" width="20" height="20" src="@/assets/images/cross.png" alt="Close" />
       <div class="input-wrapper">
-        <label for="name">event name</label>
-        <input v-model="event.name" @input="validateForm" id="name" type="text">
+        <label for="name" class="label">event name</label>
+        <input v-model="event.name" @input="validateForm" class="input" id="name" type="text">
         <span class="error" v-if="errors.name">{{ errors.name }}</span>
       </div>
       <div class="input-wrapper">
-        <label for="date">event date</label>
-        <input v-model="event.date" @input="validateForm" id="date" type="date">
+        <label for="date" class="label">event date</label>
+        <input v-model="event.date" @input="validateForm" class="input" id="date" type="date">
+        <img class="input-icon" width="20" height="20" src="@/assets/images/calendar.png" alt="Calendar" />
         <span class="error" v-if="errors.date">{{ errors.date }}</span>
       </div>
       <div class="input-wrapper">
-        <label for="time">event time</label>
-        <input v-model="event.time" @input="validateForm" :disabled="event.allDay" id="time" type="time">
+        <label for="time" class="label">event time</label>
+        <input v-model="event.time" @input="validateForm" class="input" :disabled="event.allDay" id="time" type="time">
+        <img class="input-icon" width="20" height="20" src="@/assets/images/clock.png" alt="Clock" />
         <span class="error" v-if="errors.time">{{ errors.time }}</span>
       </div>
+      <div class="input-wrapper">
+        <label for="notes" class="label">notes</label>
+        <input v-model="event.notes" @input="validateForm" class="input" id="notes" type="text">
+        <span class="error" v-if="errors.notes">{{ errors.notes }}</span>
+      </div>
       <div class="checkbox-wrapper">
-        <label for="allDay">all day</label>
+        <label for="allDay" class="label">all day</label>
         <input v-model="event.allDay" id="allDay" type="checkbox">
       </div>
       <div class="input-wrapper">
-        <label for="notes">notes</label>
-        <input v-model="event.notes" @input="validateForm" id="notes" type="text">
-        <span class="error" v-if="errors.notes">{{ errors.notes }}</span>
+        <label for="color" class="label color">Select event color</label>
+        <input v-model="event.color" class="color-input" id="color" type="color" />
       </div>
-      <div class="input-wrapper">
-        <label for="color">Event color</label>
-        <input v-model="event.color" id="color" type="color" />
-      </div>
-      <div>
-        <button v-if="mode" @click="remove" type="button">Discard</button>
-        <button v-else @click="emit('close')" type="button">Cancel</button>
-        <button type="submit">{{ mode ? 'Edit' : 'Save' }}</button>
+      <div class="buttons-wrapper">
+        <button v-if="mode" @click="remove" class="cancel-button" type="button">DISCARD</button>
+        <button v-else @click="emit('close')" class="cancel-button" type="button">Cancel</button>
+        <button type="submit" class="save-button">{{ mode ? 'EDIT' : 'Save' }}</button>
       </div>
     </form>
   </div>
 </template>
 <style scoped>
   .form-wrapper {
-
     position: fixed;
     background: white;
     box-shadow: 0 2px 12px rgba(0,0,0,0.1);
@@ -219,51 +220,30 @@ onMounted(() => {
     z-index: 1000;
   }
 
-  .form-wrapper .arrow {
+  .arrow {
     position: fixed;
     width: 0;
     height: 0;
-  }
-
-  .arrow {
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
     border-top: 6px solid #43425D;
   }
 
-  .form-wrapper.arrow-bottom .arrow {
-    top: -6px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-bottom: 6px solid #43425D;
-  }
-
-  .form-wrapper.arrow-left .arrow {
-    right: -6px;
-    top: 50%;
-    transform: translateY(-50%);
-    border-top: 6px solid transparent;
-    border-bottom: 6px solid transparent;
-    border-left: 6px solid #43425D;
-  }
-
-  .form-wrapper.arrow-right .arrow {
-    left: -6px;
-    top: 50%;
-    transform: translateY(-50%);
-    border-top: 6px solid transparent;
-    border-bottom: 6px solid transparent;
-    border-right: 6px solid #43425D;
-  }
-
-
   .form {
+    position: relative;
     display: flex;
     flex-direction: column;
-    width: 300px;
-    padding: 10px;
+    width: 200px;
+    padding: 22px 26px;
+    border: 1px solid #43425D;
+    border-radius: 10px;
+  }
+
+  .close-icon {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    cursor: pointer;
   }
 
   .input-wrapper {
@@ -276,4 +256,71 @@ onMounted(() => {
     align-items: center;
     gap: 5px;
   }
+
+  .label {
+    font-size: 9px;
+    color: #D6D6D6;
+    cursor: pointer;
+  }
+
+  .label.color {
+    margin-bottom: 10px;
+  }
+
+  .input {
+    min-height: 17px;
+    font-size: 9px;
+    color: #43425D;
+    border: none;
+    border-bottom: 0.3px solid #43425D80;
+  }
+
+  .color-input {
+    width: 100%;
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+  }
+
+  .input-wrapper:not(:last-child),
+  .checkbox-wrapper {
+    margin-bottom: 20px;
+  }
+
+  .input-wrapper {
+    position: relative;
+  }
+
+  .input-icon {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+
+  .cancel-button {
+    color: #FF5F5F;
+    font-size: 12px;
+  }
+
+  .save-button {
+    color: #6A6996;
+    font-size: 12px;
+  }
+
+  .cancel-button,
+  .save-button {
+    padding: 0;
+  }
+
+  .buttons-wrapper {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .error {
+    font-size: 9px;
+    color: #FF5F5F;
+  }
+
 </style>

@@ -88,7 +88,12 @@ function onDateClick(info) {
 
 function onPopupMounted() {
   const popupBoundingRect = document.querySelector('.form-wrapper').getBoundingClientRect();
-  const cellBoundingRect = clickedCell.dayEl.getBoundingClientRect();
+  let cellBoundingRect;
+  if (clickedCell.el) {
+    cellBoundingRect = clickedCell.el.getBoundingClientRect();
+  } else {
+    cellBoundingRect = clickedCell.dayEl.getBoundingClientRect();
+  }
 
   const popupPossibleLocations = getPopupPossibleLocations(popupBoundingRect, cellBoundingRect);
   const popupLocation = popupPossibleLocations[0];
@@ -98,14 +103,12 @@ function onPopupMounted() {
   formPosition.x = normalizedPopupCoordinates.left;
   formPosition.y = normalizedPopupCoordinates.top;
 
-  //Calculate arrow position
   const popupArrowCoordinates = getPopupArrowCoordinates(popupLocation, cellBoundingRect);
   formPosition.arrowTop = popupArrowCoordinates.top;
   formPosition.arrowLeft = popupArrowCoordinates.left;
   formPosition.arrowRotate = popupArrowCoordinates.rotate;
 
   selectedDate.value = clickedCell.dateStr;
-
 }
 
 function getPopupPossibleLocations (popupBoundingRect, cellBoundingRect) {
@@ -229,11 +232,10 @@ function getPopupArrowCoordinates(popupLocation, cellBoundingRect) {
     }
   }
 
-
   if (popupLocation === 'left') {
     return {
-      left: cellBoundingRect.left + arrowWidth,
-      top: cellBoundingRect.top + cellBoundingRect.height/2 - arrowHeight/2,
+      left: cellBoundingRect.left,
+      top: cellBoundingRect.top + cellBoundingRect.height / 2 - arrowHeight / 2,
       rotate: '-90deg'
     }
   }
@@ -272,17 +274,23 @@ function deleteEvent (id) {
 }
 
 function closeForm () {
-  isAddEventFormOpen.value = false
+  isAddEventFormOpen.value = false;
+  selectedEvent.value = null;
 }
 
 function onEventClick (clickInfo) {
   editMode.value = true;
-  const rect = clickInfo.el.getBoundingClientRect();
-  const cellCenterX = rect.left + rect.width / 2;
-  const cellBottomY = rect.bottom;
+  isAddEventFormOpen.value = true;
+  clickedCell = clickInfo;
 
-  formPosition.x = cellCenterX + window.scrollX;
-  formPosition.y = cellBottomY + window.scrollY;
+  if (editMode.value) {
+    clickInfo.event.setProp('backgroundColor', '#ffffff');
+    clickInfo.event.setProp('textColor', '#3B86FF');
+  } else {
+    console.log('hhh')
+    clickInfo.event.setProp('backgroundColor',clickInfo.event.backgroundColor || '#3B86FF');
+    // clickInfo.event.setProp('textColor', '#ffffff');
+  }
 
   selectedEvent.value = {
     id: clickInfo.event.id,
@@ -290,10 +298,9 @@ function onEventClick (clickInfo) {
     date: clickInfo.event.startStr.split('T')[0],
     time: clickInfo.event.startStr.split('T')[1]?.slice(0,5) || '',
     notes: clickInfo.event.extendedProps.notes || '',
-    color: clickInfo.event.backgroundColor || '#1f8caf'
+    color: clickInfo.event.backgroundColor || '#3B86FF',
+    allDay: clickInfo.event.allDay
   };
-
-  isAddEventFormOpen.value = true;
 }
 
 </script>
