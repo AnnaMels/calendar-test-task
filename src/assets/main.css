@@ -1,5 +1,13 @@
 @import './base.css';
 
+.calendar-container {
+    position: relative;
+}
+
+.calendar-title {
+    margin-bottom: 15px;
+}
+
 .fc-event-main-frame .fc-event-time {
     display: none;
 }
@@ -7,6 +15,26 @@
 .fc-toolbar-chunk:first-child,
 .fc-toolbar-chunk:nth-child(3) {
     box-shadow: 0 2px 3px #0000000A;
+}
+
+.fc-toolbar-chunk:first-child {
+    position: absolute;
+    top: 58px;
+}
+
+.fc-toolbar-chunk:first-child .fc-button,
+.fc-toolbar-chunk:nth-child(3) .fc-button {
+    height: 32px;
+    padding: 7px 18px;
+    line-height: normal;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.fc-toolbar-chunk:nth-child(2) {
+    margin: auto;
 }
 
 .fc .fc-button-primary:disabled {
@@ -57,7 +85,7 @@
 }
 
 .fc .fc-toolbar.fc-header-toolbar {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 .fc .fc-scrollgrid-section-header{
@@ -120,5 +148,81 @@
 .fc .fc-scrollgrid-section {
     height: 0;
 }
+
+.fc .fc-timegrid-now-indicator-container {
+    overflow: visible;
+}
+
+.fc .fc-timegrid-now-indicator-line {
+    position: absolute;
+    width: 100%;
+    transform-origin: left center;
+    transform: translateY(-50%) scaleX(1000);
+    top: 50%;
+}
+
+.fc .fc-timegrid-now-indicator-arrow {
+    width: 8px;
+    height: 8px;
+    left: 85px;
+    border-radius: 50%;
+    background-color: #3B86FF;
+    border: none;
+}
+
+.fc .fc-event-title-container {
+    padding: 7px 14px;
+    border-radius: 4px;
+}
+
+.fc-timeGridWeek-view .fc-event-title-container {
+    padding: 3px 14px;
+}
+
+.fc-timeGridDay-view .fc-event-title-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 17px 0;
+}
+
+.fc-timeGridDay-view  .fc-event {
+    border-radius: 0;
+}
+
+.fc .fc-event-title {
+    display: flex;
+    align-items: center;
+    padding: 0;
+    font-size: 13px;
+}
+
+.fc .fc-timegrid-col-events {
+    width: 100%;
+}
+
+ .fc-timegrid-event .fc-event-main {
+     padding: 0;
+ }
+
+ .fc-direction-ltr .fc-timegrid-col-events {
+     margin: 0;
+ }
+
+.fc .fc-toolbar.fc-header-toolbar .fc-toolbar-chunk:last-child {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.fc-col-header .fc-timegrid-axis {
+    display: none;
+}
+
+
+
+
+
+
 
 

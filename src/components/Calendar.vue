@@ -17,21 +17,46 @@ const selectedEvent = ref(null);
 const calendarOptions = reactive({
   plugins: [dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin],
   initialView: 'dayGridMonth',
+  defaultTimedEventDuration: '00:30:00',
+  fixedWeekCount: false,
   views: {
     timeGridWeek: {
-      titleFormat: {
-        month: 'short',
-        day: 'numeric'
-      },
+      eventOverlap: false,
+      defaultTimedEventDuration: '00:30:00',
+      nowIndicator: true,
+      titleFormat: { month: 'short', day: 'numeric' },
       slotLabelFormat: {
         hour: 'numeric',
         minute: '2-digit',
         hour12: true
       },
-      slotLabelInterval: '01:00:00',   // One label every 1 hour
-      slotDuration: '01:00:00',        // Each row is 1 hour tall
-      slotMinTime: '00:00:00',
-      slotMaxTime: '24:00:00'
+      slotLabelInterval: '01:00:00',
+      slotDuration: '01:00:00',
+    },
+    dayGridMonth: {
+      dayMaxEventRows: true
+    },
+    timeGridDay: {
+      slotDuration: '00:30:00',
+      slotLabelInterval: '00:30:00',
+      slotLabelFormat: {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      },
+      titleFormat: {
+        weekday: 'long',
+        month: 'short',
+        day: 'numeric' ,
+        omitCommas: true
+      },
+      dayHeaderContent(arg) {
+        const d = arg.date;
+        const weekday = d.toLocaleDateString('en-US', { weekday: 'short' });
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${weekday} ${mm}/${dd}`;
+      },
     }
   },
   headerToolbar: {
@@ -54,19 +79,130 @@ const calendarOptions = reactive({
   events: events
 });
 
+let clickedCell = {}
 
 function onDateClick(info) {
-  const rect = info.dayEl.getBoundingClientRect();
-
-  const cellCenterX = rect.left + rect.width / 2;
-  const cellBottomY = rect.bottom;
-
-  formPosition.x = cellCenterX + window.scrollX;
-  formPosition.y = cellBottomY + window.scrollY;
-
-  selectedDate.value = info.dateStr;
   isAddEventFormOpen.value = true;
+  clickedCell = info;
 }
+
+function onPopupMounted() {
+  const popupBoundingRect = document.querySelector('.form-wrapper').getBoundingClientRect();
+  const cellBoundingRect = clickedCell.dayEl.getBoundingClientRect();
+
+  const popupPossibleLocations = getPopupPossibleLocations(popupBoundingRect, cellBoundingRect);
+  const popupLocation = popupPossibleLocations[0];
+  const popupCoordinates = calculatePopupCoordinates(popupBoundingRect, cellBoundingRect, popupLocation);
+  const normalizedPopupCoordinates = normalizePopupCoordinates(popupCoordinates, popupBoundingRect);
+
+  formPosition.x = normalizedPopupCoordinates.left;
+  formPosition.y = normalizedPopupCoordinates.top;
+
+  selectedDate.value = clickedCell.dateStr;
+
+}
+
+function getPopupPossibleLocations (popupBoundingRect, cellBoundingRect) {
+  const locations = [];
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  const freeBottomSpace = viewportHeight - cellBoundingRect.bottom;
+  const freeRightSpace = viewportWidth - cellBoundingRect.right;
+
+  if (freeBottomSpace >= popupBoundingRect.height) {
+    locations.push('bottom')
+  }
+
+  if (cellBoundingRect.top >= popupBoundingRect.height) {
+    locations.push('top')
+  }
+
+  if (cellBoundingRect.left >= popupBoundingRect.width) {
+    locations.push('left')
+  }
+
+  if (freeRightSpace >= popupBoundingRect.width) {
+    locations.push('right')
+  }
+
+  return locations;
+}
+
+function calculatePopupCoordinates (popupBoundingRect, cellBoundingRect, location) {
+  const cellCenterX = cellBoundingRect.left + cellBoundingRect.width / 2;
+  const cellCenterY = cellBoundingRect.top + cellBoundingRect.height / 2;
+
+  if (location === 'bottom') {
+    const popupLeft = cellCenterX - popupBoundingRect.width / 2;
+    const popupTop = cellBoundingRect.bottom;
+
+    return {
+      left: popupLeft,
+      top: popupTop
+    }
+  }
+
+  if (location === 'top') {
+    const popupLeft = cellCenterX - popupBoundingRect.width / 2;
+    const popupTop = cellBoundingRect.top - popupBoundingRect.height;
+
+    return {
+      left: popupLeft,
+      top: popupTop
+    }
+  }
+
+  if (location === 'left') {
+    const popupLeft = cellBoundingRect.left - popupBoundingRect.width;
+    const popupTop = cellCenterY - popupBoundingRect.height / 2;
+
+    return {
+      left: popupLeft,
+      top: popupTop
+    }
+  }
+
+  if (location === 'right') {
+    const popupLeft = cellBoundingRect.right;
+    const popupTop = cellCenterY - popupBoundingRect.height / 2;
+
+    return {
+      left: popupLeft,
+      top: popupTop
+    }
+
+  }
+}
+
+function normalizePopupCoordinates (popupCoordinates, popupBoundingRect) {
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  let popupLeft = popupCoordinates.left;
+  let popupTop = popupCoordinates.top;
+
+  if (popupLeft < 0) {
+    popupLeft = 0
+  }
+
+  if (popupLeft + popupBoundingRect.width > viewportWidth) {
+    popupLeft = viewportWidth - popupBoundingRect.width;
+  }
+
+  if (popupTop < 0) {
+    popupTop = 0;
+  }
+
+  if (popupTop + popupBoundingRect.height > viewportHeight) {
+    popupTop = viewportHeight - popupBoundingRect.height;
+  }
+
+  return {
+    left: popupLeft,
+    top: popupTop
+  }
+}
+
 
 function handleSaveOrEditEvent(newEvent) {
   if (editMode.value) {
@@ -130,6 +266,7 @@ function onEventClick (clickInfo) {
         @save="handleSaveOrEditEvent"
         @close="closeForm"
         @delete="deleteEvent"
+        @mounted="onPopupMounted"
     />
   </div>
 </template>

@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, computed, watch } from 'vue'
+import { reactive, computed, watch, ref, nextTick, onMounted } from 'vue'
 
 const props = defineProps({
   position: {
@@ -13,17 +13,22 @@ const props = defineProps({
   initialEvent: {
     type: Object,
     default: null
+  },
+  arrowPosition: {
+    type: String,
+    default: 'bottom'
   }
 })
 
-const emit = defineEmits(['save', 'close', 'delete' ])
+const emit = defineEmits(['save', 'close', 'delete', 'mounted' ])
 
 const event = reactive({
   name: '',
   date: null,
   time: null,
   notes: '',
-  color: '#1f8caf'
+  color: '#3B86FF',
+  allDay: false
 });
 
 const errors = reactive({
@@ -43,10 +48,11 @@ function submit (e) {
   const newEvent = {
     id: props.mode && props.initialEvent?.id ? props.initialEvent.id : Date.now().toString(),
     title: event.name,
-    start: `${event.date}T${event.time}`,
+    start: event.allDay ? event.date : `${event.date}T${event.time}`,
     notes: event.notes,
     color: event.color,
-    display: 'block'
+    display: 'block',
+    allDay: event.allDay
   }
 
   emit('save', newEvent)
@@ -79,11 +85,6 @@ function validateForm () {
     valid = false
   }
 
-  if (!event.time) {
-    errors.time = 'Event time is required.'
-    valid = false
-  }
-
   if (event.date) {
     const selectedDate = new Date(event.date)
     const today = new Date()
@@ -95,24 +96,27 @@ function validateForm () {
     }
   }
 
-  if (!event.time) {
-    errors.time = 'Event time is required.'
-    valid = false
-  } else if (event.date) {
-    const selectedDate = new Date(event.date)
-    const selectedDateTime = new Date(`${event.date}T${event.time}`)
-    const now = new Date()
-
-    const isToday =
-        selectedDate.getFullYear() === now.getFullYear() &&
-        selectedDate.getMonth() === now.getMonth() &&
-        selectedDate.getDate() === now.getDate()
-
-    if (isToday && selectedDateTime.getTime() < now.getTime()) {
-      errors.time = 'Time cannot be in the past for today.'
+  if (!event.allDay) {
+    if (!event.time) {
+      errors.time = 'Event time is required.'
       valid = false
+    } else if (event.date) {
+      const selectedDate = new Date(event.date)
+      const selectedDateTime = new Date(`${event.date}T${event.time}`)
+      const now = new Date()
+
+      const isToday =
+          selectedDate.getFullYear() === now.getFullYear() &&
+          selectedDate.getMonth() === now.getMonth() &&
+          selectedDate.getDate() === now.getDate()
+
+      if (isToday && selectedDateTime.getTime() < now.getTime()) {
+        errors.time = 'Time cannot be in the past for today.'
+        valid = false
+      }
     }
   }
+
 
   if (!event.notes.trim()) {
     errors.notes = 'Notes are required.'
@@ -122,10 +126,25 @@ function validateForm () {
   return valid
 }
 
-const formPosition = computed(() => ({
-  top: `${props.position.y}px`,
-  left: `${props.position.x}px`
-}))
+const adjustedPosition = ref({ top: '0px', left: '0px' })
+const formRef = ref()
+
+// Watch the passed position and adjust it to stay within viewport
+watch(
+    () => props.position,
+    async (newPos) => {
+      await nextTick() // wait for DOM update
+
+      let left = newPos.x
+      let top = newPos.y
+
+      adjustedPosition.value = {
+        top: `${top}px`,
+        left: `${left}px`
+      }
+    },
+    { immediate: true }
+)
 
 watch(
     () => props.initialEvent,
@@ -135,22 +154,21 @@ watch(
         event.date = newVal.date || null
         event.time = newVal.time || null
         event.notes = newVal.notes || ''
-        event.color = newVal.color || '#1f8caf'
-      } else {
-        // Reset to empty for Add mode
-        event.name = ''
-        event.date = null
-        event.time = null
-        event.notes = ''
-        event.color = '#1f8caf'
+        event.color = newVal.color || '#3B86FF'
+        event.allDay = newVal.allDay || false
       }
     },
     { immediate: true }
 )
 
+onMounted(() => {
+  emit('mounted')
+})
+
 </script>
 <template>
-  <div class="form-wrapper" :style="formPosition">
+  <div class="form-wrapper" ref="formRef" :style="adjustedPosition" :class="`arrow-${props.arrowPosition}`">
+    <div class="arrow"></div>
     <form @submit="submit" class="form">
       <div class="input-wrapper">
         <label for="name">event name</label>
@@ -164,8 +182,12 @@ watch(
       </div>
       <div class="input-wrapper">
         <label for="time">event time</label>
-        <input v-model="event.time" @input="validateForm" id="time" type="time">
+        <input v-model="event.time" @input="validateForm" :disabled="event.allDay" id="time" type="time">
         <span class="error" v-if="errors.time">{{ errors.time }}</span>
+      </div>
+      <div class="checkbox-wrapper">
+        <label for="allDay">all day</label>
+        <input v-model="event.allDay" id="allDay" type="checkbox">
       </div>
       <div class="input-wrapper">
         <label for="notes">notes</label>
@@ -186,14 +208,55 @@ watch(
 </template>
 <style scoped>
   .form-wrapper {
-    position: absolute;
-    transform: translate(-50%, -40%);
-    transform-origin: top center;
+    position: fixed;
     background: white;
     box-shadow: 0 2px 12px rgba(0,0,0,0.1);
     border-radius: 8px;
     z-index: 1000;
   }
+
+  .form-wrapper .arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+  }
+
+  .form-wrapper.arrow-top .arrow {
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #43425D;
+  }
+
+  .form-wrapper.arrow-bottom .arrow {
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #43425D;
+  }
+
+  .form-wrapper.arrow-left .arrow {
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 6px solid #43425D;
+  }
+
+  .form-wrapper.arrow-right .arrow {
+    left: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-right: 6px solid #43425D;
+  }
+
 
   .form {
     display: flex;
@@ -205,5 +268,11 @@ watch(
   .input-wrapper {
     display: flex;
     flex-direction: column;
+  }
+
+  .checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 5px;
   }
 </style>
