@@ -13,10 +13,6 @@ const props = defineProps({
   initialEvent: {
     type: Object,
     default: null
-  },
-  arrowPosition: {
-    type: String,
-    default: 'bottom'
   }
 })
 
@@ -127,6 +123,7 @@ function validateForm () {
 }
 
 const adjustedPosition = ref({ top: '0px', left: '0px' })
+const arrowPosition = ref({top: '0px', left: '0px', rotate: '0deg'})
 const formRef = ref()
 
 // Watch the passed position and adjust it to stay within viewport
@@ -141,6 +138,12 @@ watch(
       adjustedPosition.value = {
         top: `${top}px`,
         left: `${left}px`
+      }
+
+      arrowPosition.value = {
+        top: `${newPos.arrowTop}px`,
+        left: `${newPos.arrowLeft}px`,
+        rotate: newPos.arrowRotate
       }
     },
     { immediate: true }
@@ -167,8 +170,8 @@ onMounted(() => {
 
 </script>
 <template>
-  <div class="form-wrapper" ref="formRef" :style="adjustedPosition" :class="`arrow-${props.arrowPosition}`">
-    <div class="arrow"></div>
+  <div class="form-wrapper" ref="formRef" :style="adjustedPosition">
+    <div class="arrow" :style="arrowPosition"></div>
     <form @submit="submit" class="form">
       <div class="input-wrapper">
         <label for="name">event name</label>
@@ -208,6 +211,7 @@ onMounted(() => {
 </template>
 <style scoped>
   .form-wrapper {
+
     position: fixed;
     background: white;
     box-shadow: 0 2px 12px rgba(0,0,0,0.1);
@@ -216,15 +220,12 @@ onMounted(() => {
   }
 
   .form-wrapper .arrow {
-    position: absolute;
+    position: fixed;
     width: 0;
     height: 0;
   }
 
-  .form-wrapper.arrow-top .arrow {
-    bottom: -6px;
-    left: 50%;
-    transform: translateX(-50%);
+  .arrow {
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
     border-top: 6px solid #43425D;

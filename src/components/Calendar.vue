@@ -7,7 +7,7 @@ import listPlugin from '@fullcalendar/list'
 import interactionPlugin from '@fullcalendar/interaction'
 import EventForm from '@/components/EventForm.vue'
 
-const formPosition = reactive({ x: 0, y: 0 })
+const formPosition = reactive({ x: 0, y: 0, arrowLeft: 0, arrowTop: 0, arrowRotate: '0deg' })
 const events = reactive([]);
 const editMode = ref(false);
 const isAddEventFormOpen = ref(false);
@@ -97,6 +97,12 @@ function onPopupMounted() {
 
   formPosition.x = normalizedPopupCoordinates.left;
   formPosition.y = normalizedPopupCoordinates.top;
+
+  //Calculate arrow position
+  const popupArrowCoordinates = getPopupArrowCoordinates(popupLocation, cellBoundingRect);
+  formPosition.arrowTop = popupArrowCoordinates.top;
+  formPosition.arrowLeft = popupArrowCoordinates.left;
+  formPosition.arrowRotate = popupArrowCoordinates.rotate;
 
   selectedDate.value = clickedCell.dateStr;
 
@@ -200,6 +206,44 @@ function normalizePopupCoordinates (popupCoordinates, popupBoundingRect) {
   return {
     left: popupLeft,
     top: popupTop
+  }
+}
+
+function getPopupArrowCoordinates(popupLocation, cellBoundingRect) {
+  const arrowWidth = 12; //TODO calculate correct
+  const arrowHeight = 6;
+
+  if (popupLocation === 'bottom') {
+    return {
+      left: cellBoundingRect.left + cellBoundingRect.width/2 - arrowWidth/2,
+      top: cellBoundingRect.bottom - arrowHeight,
+      rotate: '180deg'
+    }
+  }
+
+  if (popupLocation === 'top') {
+    return {
+      left: cellBoundingRect.left + cellBoundingRect.width/2 - arrowWidth/2,
+      top: cellBoundingRect.top,
+      rotate: '0deg'
+    }
+  }
+
+
+  if (popupLocation === 'left') {
+    return {
+      left: cellBoundingRect.left + arrowWidth,
+      top: cellBoundingRect.top + cellBoundingRect.height/2 - arrowHeight/2,
+      rotate: '-90deg'
+    }
+  }
+
+  if (popupLocation === 'right') {
+    return {
+      left: cellBoundingRect.right - arrowWidth,
+      top: cellBoundingRect.top + cellBoundingRect.height/2 - arrowHeight/2,
+      rotate: '90deg'
+    }
   }
 }
 
