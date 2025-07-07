@@ -260,7 +260,15 @@ function handleSaveOrEditEvent(newEvent) {
     events.push(newEvent)
   }
 
-  closeForm()
+  if (clickedCell && clickedCell.event) {
+    const newColor = selectedEvent.value?.color || '#3B86FF';
+    clickedCell.event.setProp('backgroundColor', newColor);
+    clickedCell.event.setProp('borderColor', newColor);
+    clickedCell.event.setProp('textColor', '#ffffff');
+    clickedCell.event.setExtendedProp('customColor', newColor);
+  }
+
+  discardChanges()
   editMode.value = false
   selectedEvent.value = null
 }
@@ -270,27 +278,37 @@ function deleteEvent (id) {
   if (index !== -1) {
     events.splice(index, 1)
   }
-  closeForm()
+  discardChanges()
 }
 
 function closeForm () {
+  editMode.value = false;
   isAddEventFormOpen.value = false;
+  clickedCell = null;
   selectedEvent.value = null;
 }
 
-function onEventClick (clickInfo) {
+function discardChanges() {
+  restoreEventStyle();
+  closeForm();
+}
+
+function onEventClick(clickInfo) {
   editMode.value = true;
   isAddEventFormOpen.value = true;
   clickedCell = clickInfo;
 
-  if (editMode.value) {
-    clickInfo.event.setProp('backgroundColor', '#ffffff');
-    clickInfo.event.setProp('textColor', '#3B86FF');
-  } else {
-    console.log('hhh')
-    clickInfo.event.setProp('backgroundColor',clickInfo.event.backgroundColor || '#3B86FF');
-    // clickInfo.event.setProp('textColor', '#ffffff');
+  const currentColor = clickInfo.event.extendedProps.customColor
+      || clickInfo.event.backgroundColor
+      || '#3B86FF';
+
+  if (!clickInfo.event.extendedProps.customColor) {
+    clickInfo.event.setExtendedProp('customColor', currentColor);
   }
+
+  clickInfo.event.setProp('textColor', currentColor);
+  clickInfo.event.setProp('borderColor', currentColor);
+  clickInfo.event.setProp('backgroundColor', '#ffffff');
 
   selectedEvent.value = {
     id: clickInfo.event.id,
@@ -298,10 +316,20 @@ function onEventClick (clickInfo) {
     date: clickInfo.event.startStr.split('T')[0],
     time: clickInfo.event.startStr.split('T')[1]?.slice(0,5) || '',
     notes: clickInfo.event.extendedProps.notes || '',
-    color: clickInfo.event.backgroundColor || '#3B86FF',
+    color: currentColor,
     allDay: clickInfo.event.allDay
   };
 }
+
+function restoreEventStyle() {
+  if (clickedCell && clickedCell.event) {
+    const savedColor = clickedCell.event.extendedProps.customColor || '#3B86FF';
+    clickedCell.event.setProp('backgroundColor', savedColor);
+    clickedCell.event.setProp('borderColor', savedColor);
+    clickedCell.event.setProp('textColor', '#ffffff');
+  }
+}
+
 
 </script>
 
@@ -315,7 +343,7 @@ function onEventClick (clickInfo) {
         :mode="editMode"
         :position="formPosition"
         @save="handleSaveOrEditEvent"
-        @close="closeForm"
+        @close="discardChanges"
         @delete="deleteEvent"
         @mounted="onPopupMounted"
     />
