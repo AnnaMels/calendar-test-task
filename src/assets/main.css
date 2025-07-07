@@ -220,10 +220,6 @@
     right: 20px;
 }
 
-.fc-col-header .fc-timegrid-axis {
-    display: none;
-}
-
 .fc .fc-col-header-cell-cushion {
     padding: 0;
 }

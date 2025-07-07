@@ -1,33 +1,15 @@
-# .
+## 📅 Calendar App
 
-This template should help get you started developing with Vue 3 in Vite.
+I created a calendar using the **[FullCalendar](https://fullcalendar.io/)** library.  
+This is a minimally working solution - I focused on achieving the desired **functionality** and **appearance**, but the code still needs some **refactoring**.
 
-## Recommended IDE Setup
+The provided mockup (from technical task) didn’t include visuals for some requirements, so I added my own versions to preserve the necessary features. I didn’t use any additional libraries and instead implemented my own (somewhat tricky) calculations for positioning the popup.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+---
 
-## Type Support for `.vue` Imports in TS
+ **Key Points**
+- Built with **FullCalendar**.
+- Custom popup positioning logic
+- Mockup-inspired design with my own additions for missing parts.
+- Functionality prioritized - refactoring planned.
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
