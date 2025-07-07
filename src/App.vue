@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import Calendar from "@/components/Calendar.vue";
+import Sidebar from "@/components/Sidebar.vue";
+import Header from "@/components/Header.vue";
 </script>
 
 <template>
-  <header>
-  </header>
+  <Sidebar />
+  <Header />
 
-  <main>
+  <main class="main-content">
     <section class="calendar-section">
       <h1 class="main-title">Calendar</h1>
       <Calendar />
@@ -15,13 +17,19 @@ import Calendar from "@/components/Calendar.vue";
 </template>
 
 <style scoped>
+  .main-content {
+    margin-left: 220px;
+    margin-top: 60px;
+  }
+
   .calendar-section {
+    padding: 0 75px 103px;
     background-color: #F0F0F7;
-    padding: 100px 75px;
   }
 
   .main-title {
-    margin: 32px 0;
+    margin-bottom: 32px;
+    padding-top: 32px;
   }
 
 </style>

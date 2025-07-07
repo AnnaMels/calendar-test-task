@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, computed, watch, ref, nextTick, onMounted } from 'vue'
+import { reactive, watch, ref, nextTick, onMounted } from 'vue'
 
 const props = defineProps({
   position: {
@@ -112,7 +112,6 @@ function validateForm () {
       }
     }
   }
-
 
   if (!event.notes.trim()) {
     errors.notes = 'Notes are required.'

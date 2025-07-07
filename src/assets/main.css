@@ -93,7 +93,12 @@
 }
 
 .fc .fc-col-header-cell .fc-scrollgrid-sync-inner {
-    padding: 16px 0;
+    padding: 15px 0;
+    line-height: 1;
+}
+
+.fc .fc-dayGridMonth-view .fc-col-header-cell {
+    text-transform: uppercase;
 }
 
 .fc-theme-standard th {
@@ -154,10 +159,9 @@
 }
 
 .fc .fc-timegrid-now-indicator-line {
-    position: absolute;
-    width: 100%;
-    transform-origin: left center;
-    transform: translateY(-50%) scaleX(1000);
+    transform-origin: 20% center;
+    transform: translateY(-50%) scaleX(10);
+    left: 28%;
     top: 50%;
 }
 
@@ -165,6 +169,7 @@
     width: 8px;
     height: 8px;
     left: 85px;
+    top: 6px;
     border-radius: 50%;
     background-color: #3B86FF;
     border: none;
@@ -217,6 +222,10 @@
 
 .fc-col-header .fc-timegrid-axis {
     display: none;
+}
+
+.fc .fc-col-header-cell-cushion {
+    padding: 0;
 }
 
 

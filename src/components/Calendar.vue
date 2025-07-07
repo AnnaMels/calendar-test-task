@@ -84,6 +84,7 @@ let clickedCell = {}
 function onDateClick(info) {
   isAddEventFormOpen.value = true;
   clickedCell = info;
+  info.dayEl.style.boxShadow = '0px 3px 6px #00000029'
 }
 
 function onPopupMounted() {
@@ -216,6 +217,8 @@ function getPopupArrowCoordinates(popupLocation, cellBoundingRect) {
   const arrowWidth = 12; //TODO calculate correct
   const arrowHeight = 6;
 
+  //TODO refactor repeated code
+
   if (popupLocation === 'bottom') {
     return {
       left: cellBoundingRect.left + cellBoundingRect.width/2 - arrowWidth/2,
@@ -249,7 +252,6 @@ function getPopupArrowCoordinates(popupLocation, cellBoundingRect) {
   }
 }
 
-
 function handleSaveOrEditEvent(newEvent) {
   if (editMode.value) {
     const index = events.findIndex(e => e.id === newEvent.id)
@@ -282,6 +284,7 @@ function deleteEvent (id) {
 }
 
 function closeForm () {
+  restoreCellStyle();
   editMode.value = false;
   isAddEventFormOpen.value = false;
   clickedCell = null;
@@ -293,7 +296,7 @@ function discardChanges() {
   closeForm();
 }
 
-function onEventClick(clickInfo) {
+function onEventClick (clickInfo) {
   editMode.value = true;
   isAddEventFormOpen.value = true;
   clickedCell = clickInfo;
@@ -309,6 +312,7 @@ function onEventClick(clickInfo) {
   clickInfo.event.setProp('textColor', currentColor);
   clickInfo.event.setProp('borderColor', currentColor);
   clickInfo.event.setProp('backgroundColor', '#ffffff');
+  clickInfo.el.style.boxShadow = '0px 3px 6px #00000063';
 
   selectedEvent.value = {
     id: clickInfo.event.id,
@@ -321,7 +325,7 @@ function onEventClick(clickInfo) {
   };
 }
 
-function restoreEventStyle() {
+function restoreEventStyle () {
   if (clickedCell && clickedCell.event) {
     const savedColor = clickedCell.event.extendedProps.customColor || '#3B86FF';
     clickedCell.event.setProp('backgroundColor', savedColor);
@@ -330,13 +334,17 @@ function restoreEventStyle() {
   }
 }
 
-
+function restoreCellStyle () {
+  if (clickedCell && clickedCell.dayEl) {
+    clickedCell.dayEl.style.boxShadow = '';
+  }
+}
 </script>
 
 <template>
   <div class="calendar-container">
     <h2 class="calendar-title">Calendar View</h2>
-    <FullCalendar :options="calendarOptions"/>
+    <FullCalendar :options="calendarOptions" />
     <EventForm
         v-if="isAddEventFormOpen"
         :initialEvent="selectedEvent"

@@ -49,6 +49,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+ul {
+  padding-left: 0;
+  list-style-type: none;
+}
+
 button {
   font-family: inherit;
   background-color: transparent;
